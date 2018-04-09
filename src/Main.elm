@@ -1,32 +1,44 @@
 module Main exposing (..)
 
-import Html exposing (Html, text, div, h1, img)
-import Html.Attributes exposing (src)
+import Model exposing (Model)
+import Html exposing (Html, div)
+import Html.Attributes exposing (style)
+import Msg exposing (Msg(..))
+import Ship exposing (Ship)
+import AnimationFrame
+import Keyboard.Extra
 
 
----- MODEL ----
+---- SUBSCRIPTIONS ----
 
 
-type alias Model =
-    {}
-
-
-init : ( Model, Cmd Msg )
-init =
-    ( {}, Cmd.none )
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ AnimationFrame.diffs Tick
+        , Sub.map KeyMsg Keyboard.Extra.subscriptions
+        ]
 
 
 
 ---- UPDATE ----
 
 
-type Msg
-    = NoOp
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( model, Cmd.none )
+    case msg of
+        Tick diff ->
+            model
+                |> Model.onTick diff
+                |> Model.withNoCmd
+
+        KeyMsg keyMsg ->
+            model
+                |> Model.onKeyMsg keyMsg
+                |> Model.withNoCmd
+
+        _ ->
+            model |> Model.withNoCmd
 
 
 
@@ -35,9 +47,15 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
-        [ img [ src "/logo.svg" ] []
-        , h1 [] [ text "Your Elm App is working!" ]
+    div
+        [ style
+            [ ( "position", "relative" )
+            , ( "width", "500px" )
+            , ( "height", "500px" )
+            , ( "backgroundColor", "black" )
+            ]
+        ]
+        [ Ship.view model.ship
         ]
 
 
@@ -49,7 +67,7 @@ main : Program Never Model Msg
 main =
     Html.program
         { view = view
-        , init = init
+        , init = Model.initial
         , update = update
-        , subscriptions = always Sub.none
+        , subscriptions = subscriptions
         }
