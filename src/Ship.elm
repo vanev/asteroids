@@ -79,7 +79,9 @@ onTick time pressedKeys ship =
                 ship.velocity
 
         position =
-            Physics.applyVelocityToPosition velocity time ship.position
+            ship.position
+                |> Physics.applyVelocityToPosition velocity time
+                |> Physics.Position.restrict -250 250
     in
         { ship
             | position = position

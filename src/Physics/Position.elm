@@ -36,6 +36,24 @@ add ( xA, yA ) ( xB, yB ) =
     ( (xA + xB), (yA + yB) )
 
 
+map : (Float -> Float) -> Position -> Position
+map fn ( x, y ) =
+    ( fn x, fn y )
+
+
+restrict : Float -> Float -> Position -> Position
+restrict min max =
+    map
+        (\value ->
+            if value < min then
+                value + (max - min)
+            else if value > max then
+                value - (max - min)
+            else
+                value
+        )
+
+
 generator : Position -> Position -> Generator Position
 generator ( minX, minY ) ( maxX, maxY ) =
     Random.pair (Random.float minX maxX) (Random.float minY maxY)
