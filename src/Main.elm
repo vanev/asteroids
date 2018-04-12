@@ -45,6 +45,18 @@ update msg model =
 ---- VIEW ----
 
 
+ship : Model -> Html Msg
+ship model =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "width", "100%" )
+            , ( "height", "100%" )
+            ]
+        ]
+        [ Ship.view model.ship ]
+
+
 view : Model -> Html Msg
 view model =
     div
@@ -55,7 +67,7 @@ view model =
             , ( "backgroundColor", "black" )
             ]
         ]
-        [ Ship.view model.ship
+        [ ship model
         ]
 
 
