@@ -2,6 +2,7 @@ module Physics.Position exposing (..)
 
 import Tuple exposing (first, second)
 import Physics.Distance exposing (Distance)
+import Random exposing (Generator)
 
 
 type alias Position =
@@ -33,3 +34,8 @@ distance ( xA, yA ) ( xB, yB ) =
 add : Position -> Position -> Position
 add ( xA, yA ) ( xB, yB ) =
     ( (xA + xB), (yA + yB) )
+
+
+generator : Position -> Position -> Generator Position
+generator ( minX, minY ) ( maxX, maxY ) =
+    Random.pair (Random.float minX maxX) (Random.float minY maxY)

@@ -5,6 +5,7 @@ import Time exposing (Time)
 import Physics.Speed exposing (Speed)
 import Physics.Direction exposing (Direction)
 import Physics.Position exposing (Position)
+import Random exposing (Generator)
 
 
 type alias Velocity =
@@ -46,3 +47,8 @@ add a b =
             fromPolar b
     in
         toPolar ( (xA + xB), (yA + yB) )
+
+
+generator : Speed -> Speed -> Generator Velocity
+generator min max =
+    Random.pair (Physics.Speed.generator min max) (Physics.Direction.generator)
