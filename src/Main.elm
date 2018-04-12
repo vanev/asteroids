@@ -5,8 +5,11 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 import Msg exposing (Msg(..))
 import Ship exposing (Ship)
+import Asteroid
+import Asteroid.View
 import AnimationFrame
 import Keyboard.Extra
+import Random
 
 
 ---- SUBSCRIPTIONS ----
@@ -30,11 +33,20 @@ update msg model =
         Tick diff ->
             model
                 |> Model.onTick diff
-                |> Model.withNoCmd
+                |> \model ->
+                    if List.length model.asteroids < 5 then
+                        Model.withCmd (Random.generate NewAsteroid Asteroid.generator) model
+                    else
+                        Model.withNoCmd model
 
         KeyMsg keyMsg ->
             model
                 |> Model.onKeyMsg keyMsg
+                |> Model.withNoCmd
+
+        NewAsteroid asteroid ->
+            model
+                |> Model.onNewAsteroid asteroid
                 |> Model.withNoCmd
 
         _ ->
@@ -57,6 +69,18 @@ ship model =
         [ Ship.view model.ship ]
 
 
+asteroids : Model -> Html Msg
+asteroids model =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "width", "100%" )
+            , ( "height", "100%" )
+            ]
+        ]
+        (List.map Asteroid.View.view model.asteroids)
+
+
 view : Model -> Html Msg
 view model =
     div
@@ -68,6 +92,7 @@ view model =
             ]
         ]
         [ ship model
+        , asteroids model
         ]
 
 
