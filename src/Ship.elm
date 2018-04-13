@@ -1,4 +1,4 @@
-module Ship exposing (Ship, initial, view, onTick)
+module Ship exposing (Ship, initial, weaponsReady, view, onTick)
 
 import Physics
 import Physics.Position exposing (Position)
@@ -6,7 +6,7 @@ import Physics.Velocity exposing (Velocity)
 import Physics.Speed exposing (Speed)
 import Physics.Direction exposing (Direction)
 import Physics.Acceleration exposing (Acceleration)
-import Time exposing (Time)
+import Time exposing (Time, millisecond)
 import Physics.Distance
 import Msg exposing (Msg)
 import Html exposing (Html, text, div)
@@ -18,6 +18,7 @@ type alias Ship =
     { position : Position
     , direction : Direction
     , velocity : Velocity
+    , weaponsCooldown : Time
     }
 
 
@@ -26,7 +27,13 @@ initial =
     { position = ( 0, 0 )
     , direction = 0
     , velocity = ( 0, 0 )
+    , weaponsCooldown = 0
     }
+
+
+weaponsReady : Ship -> Bool
+weaponsReady { weaponsCooldown } =
+    weaponsCooldown <= 0
 
 
 rotationSpeed : Speed
@@ -82,11 +89,20 @@ onTick time pressedKeys ship =
             ship.position
                 |> Physics.applyVelocityToPosition velocity time
                 |> Physics.Position.restrict -250 250
+
+        weaponsCooldown =
+            if ship.weaponsCooldown > 0 then
+                ship.weaponsCooldown - time
+            else if List.member Space pressedKeys then
+                250 * millisecond
+            else
+                0
     in
         { ship
             | position = position
             , direction = direction
             , velocity = velocity
+            , weaponsCooldown = weaponsCooldown
         }
 
 

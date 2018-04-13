@@ -5,6 +5,7 @@ import Html exposing (Html, div)
 import Html.Attributes exposing (style)
 import Msg exposing (Msg(..))
 import Ship exposing (Ship)
+import Laser
 import Asteroid
 import Asteroid.View
 import AnimationFrame
@@ -69,6 +70,18 @@ ship model =
         [ Ship.view model.ship ]
 
 
+lasers : Model -> Html Msg
+lasers model =
+    div
+        [ style
+            [ ( "position", "absolute" )
+            , ( "width", "100%" )
+            , ( "height", "100%" )
+            ]
+        ]
+        (List.map Laser.view model.lasers)
+
+
 asteroids : Model -> Html Msg
 asteroids model =
     div
@@ -92,6 +105,7 @@ view model =
             ]
         ]
         [ ship model
+        , lasers model
         , asteroids model
         ]
 
