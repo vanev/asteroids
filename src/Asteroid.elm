@@ -7,7 +7,7 @@ import Physics.Distance exposing (centimeter)
 import Physics
 import Time exposing (Time, second)
 import Random exposing (Generator)
-import Asteroid.Size exposing (Size)
+import Asteroid.Size exposing (Size(..))
 
 
 type alias Asteroid =
@@ -15,7 +15,30 @@ type alias Asteroid =
     , velocity : Velocity
     , direction : Direction
     , size : Size
+    , hitPoints : Float
     }
+
+
+isAlive : Asteroid -> Bool
+isAlive { hitPoints } =
+    hitPoints > 0
+
+
+collidesWith : Position -> Asteroid -> Bool
+collidesWith target asteroid =
+    let
+        diameter =
+            case asteroid.size of
+                Small ->
+                    15
+
+                Medium ->
+                    25
+
+                Large ->
+                    35
+    in
+        Physics.Position.distance target asteroid.position < diameter
 
 
 generator : Generator Asteroid
@@ -32,8 +55,11 @@ generator =
 
         size =
             Asteroid.Size.generator
+
+        hitPoints =
+            Random.float 100 100
     in
-        Random.map4 Asteroid position velocity direction size
+        Random.map5 Asteroid position velocity direction size hitPoints
 
 
 onTick : Time -> Asteroid -> Asteroid

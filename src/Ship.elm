@@ -19,6 +19,7 @@ type alias Ship =
     , direction : Direction
     , velocity : Velocity
     , weaponsCooldown : Time
+    , hitPoints : Float
     }
 
 
@@ -28,6 +29,7 @@ initial =
     , direction = 0
     , velocity = ( 0, 0 )
     , weaponsCooldown = 0
+    , hitPoints = 100
     }
 
 
@@ -107,7 +109,7 @@ onTick time pressedKeys ship =
 
 
 view : Ship -> Html Msg
-view { position, direction } =
+view { position, direction, hitPoints } =
     let
         top =
             position
@@ -125,6 +127,12 @@ view { position, direction } =
         rotation =
             direction
                 |> toString
+
+        color =
+            if hitPoints <= 0 then
+                "red"
+            else
+                "white"
     in
         div
             [ style
@@ -133,7 +141,7 @@ view { position, direction } =
                 , ( "left", left ++ "px" )
                 , ( "width", "20px" )
                 , ( "height", "20px" )
-                , ( "color", "white" )
+                , ( "color", color )
                 , ( "fontSize", "20px" )
                 , ( "lineHeight", "20px" )
                 , ( "fontWeight", "bold" )

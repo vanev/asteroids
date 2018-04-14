@@ -58,6 +58,26 @@ addLaserIfFiring pressedKeys ship lasers =
 onTick : Time -> Model -> Model
 onTick diff model =
     let
+        ship =
+            Ship.onTick diff model.pressedKeys model.ship
+                |> (\ship ->
+                        if List.any (Asteroid.collidesWith ship.position) model.asteroids then
+                            { ship | hitPoints = 0 }
+                        else
+                            ship
+                   )
+
+        asteroids =
+            List.map (Asteroid.onTick diff) model.asteroids
+                |> List.map
+                    (\asteroid ->
+                        if List.any (\laser -> Asteroid.collidesWith laser.position asteroid) model.lasers then
+                            { asteroid | hitPoints = 0 }
+                        else
+                            asteroid
+                    )
+                |> List.filter Asteroid.isAlive
+
         lasers =
             model.lasers
                 |> addLaserIfFiring model.pressedKeys model.ship
@@ -65,8 +85,8 @@ onTick diff model =
                 |> List.filter Laser.isAlive
     in
         { model
-            | ship = Ship.onTick diff model.pressedKeys model.ship
-            , asteroids = List.map (Asteroid.onTick diff) model.asteroids
+            | ship = ship
+            , asteroids = asteroids
             , lasers = lasers
         }
 
